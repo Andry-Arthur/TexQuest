@@ -1,0 +1,77 @@
+# Environment variables and secrets
+.env
+*.env
+.env.*
+
+# Build directories
+target/
+*/target/
+build/
+*/build/
+texquest/
+
+# Maven specific
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# LaTeX build files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.run.xml
+*.synctex.gz
+*.toc
+
+# IDE specific files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.code-workspace
+.settings/
+.classpath
+.project
+
+# Node/NPM/Yarn
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnp/
+.pnp.js
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.env/
+.venv/
+/grader_microservice/.env/
+
+# Compiled class files
+*.class
+
+# OS specific files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Application logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp

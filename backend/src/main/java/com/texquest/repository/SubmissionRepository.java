@@ -10,4 +10,5 @@ import java.util.List;
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     List<Submission> findByUser(User user);
     List<Submission> findByQuestion(Question question);
+    List<Submission> findByUserAndQuestionOrderByTimestampDesc(User user, Question question);
 }

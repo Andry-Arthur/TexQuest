@@ -12,7 +12,7 @@ function Join() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // clear previous error
+    setError("");
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -20,17 +20,26 @@ function Join() {
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/api/users", {
+      const res = await axios.post("http://localhost:8080/api/auth/register", {
         name,
         email,
         password,
       });
 
-      console.log("Registered user:", response.data);
-      localStorage.setItem("user", JSON.stringify(response.data));
-      navigate("/contest");
+      if (res.data && res.data.id) {
+        localStorage.setItem("userId", res.data.id);
+        localStorage.setItem("userName", res.data.name); // optional
+
+        navigate("/contests");
+      } else {
+        setError("Unexpected error during registration.");
+      }
     } catch (error) {
-      setError("Error joining: " + (error.response?.data?.message || error.message));
+      if (error.response?.status === 409) {
+        setError("Email already in use.");
+      } else {
+        setError("Registration failed: " + (error.response?.data || error.message));
+      }
     }
   };
 

@@ -16,7 +16,7 @@ public class ContestParticipation {
     @ManyToOne
     private Contest contest;
 
-    private int score = 0;
+    private double score = 0;
 
     public ContestParticipation() {}
 
@@ -26,10 +26,16 @@ public class ContestParticipation {
         this.score = 0;
     }
 
+    public ContestParticipation(User user, Contest contest, double score) {
+        this.user = user;
+        this.contest = contest;
+        this.score = score;
+    }
+
     public Long getId() { return id; }
     public User getUser() { return user; }
     public Contest getContest() { return contest; }
-    public int getScore() { return score; }
+    public double getScore() { return score; }
 
-    public void setScore(int score) { this.score = score; }
+    public void setScore(double score) { this.score = score; }
 }

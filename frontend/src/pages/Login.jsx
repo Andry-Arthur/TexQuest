@@ -18,8 +18,11 @@ function Login() {
         password,
       });
 
-      if (res.data) {
-        localStorage.setItem("user", JSON.stringify(res.data));
+      if (res.data && res.data.id) {
+        // ✅ Save just the userId for global use
+        localStorage.setItem("userId", res.data.id);
+        localStorage.setItem("userName", res.data.name); // optional: store name too
+
         navigate("/contests");
       } else {
         setError("Invalid email or password.");

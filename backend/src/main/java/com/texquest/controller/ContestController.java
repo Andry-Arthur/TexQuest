@@ -23,6 +23,12 @@ public class ContestController {
     @Autowired
     private ContestParticipationRepository participationRepository;
 
+    @PostMapping
+    public Contest createContest(@RequestBody Contest contest) {
+        contest.setActive(false); // not active until started
+        return contestRepository.save(contest);
+    }
+
     @PostMapping("/start")
     public Contest startContest() {
         Contest contest = new Contest();

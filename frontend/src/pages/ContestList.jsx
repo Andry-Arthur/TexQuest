@@ -1,42 +1,61 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function ContestList() {
-  const [contests, setContests] = useState({ ongoing: [], upcoming: [], past: [] });
-  const navigate = useNavigate();
+  const [groupedContests, setGroupedContests] = useState({
+    ongoing: [],
+    upcoming: [],
+    past: [],
+  });
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/contest/all").then((res) => {
-      setContests(res.data);
-    });
+    axios
+      .get("http://localhost:8080/api/contest/all")
+      .then((res) => setGroupedContests(res.data))
+      .catch(console.error);
   }, []);
-
-  const goToContest = (id) => {
-    navigate(`/contest/${id}`);
-  };
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h2>TexQuest Contests</h2>
+      <h2>📅 Available Contests</h2>
 
       {["ongoing", "upcoming", "past"].map((group) => (
         <div key={group}>
-          <h3>{group.charAt(0).toUpperCase() + group.slice(1)} Contests</h3>
-          {contests[group].length === 0 ? (
-            <p>No {group} contests.</p>
-          ) : (
-            <ul>
-              {contests[group].map((c) => (
-                <li key={c.id}>
-                  Contest #{c.id} — starts {c.startTime?.split("T")[0]}
-                  {group === "ongoing" && (
-                    <button onClick={() => goToContest(c.id)}>Enter</button>
-                  )}
-                </li>
-              ))}
-            </ul>
+          <h3 style={{ marginTop: "2rem" }}>{group.toUpperCase()}</h3>
+          {groupedContests[group]?.length === 0 && (
+            <p>No {group} contests available.</p>
           )}
+
+          {groupedContests[group]?.map((contest) => (
+            <Link
+              key={contest.id}
+              to={`/contest/${contest.id}`} // ✅ pass contestId in URL
+              style={{
+                textDecoration: "none",
+                color: "inherit"
+              }}
+            >
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "1rem",
+                  margin: "1rem 0",
+                  backgroundColor: "#f9f9f9",
+                  transition: "0.2s",
+                  cursor: "pointer"
+                }}
+              >
+                <h4>{contest.name}</h4>
+                <p>{contest.description}</p>
+                <p>
+                  <strong>🕒</strong> {new Date(contest.startTime).toLocaleString()} →{" "}
+                  {new Date(contest.endTime).toLocaleString()}
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       ))}
     </div>

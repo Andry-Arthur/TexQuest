@@ -8,12 +8,15 @@ import Login from "./pages/Login";
 
 
 function App() {
+  const userId = localStorage.getItem("userId"); // ✅ Define it first
+
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Join />} />
         <Route path="/contests" element={<ContestList />} />
-        <Route path="/contest/:id" element={<Contest />} />
+        <Route path="/contest/:contestId" element={<Contest userId={userId} />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />

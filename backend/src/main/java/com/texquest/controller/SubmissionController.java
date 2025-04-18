@@ -2,11 +2,9 @@ package com.texquest.controller;
 
 import com.texquest.model.*;
 import com.texquest.repository.*;
+import com.texquest.service.AiGraderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.texquest.repository.QuestionRepository;
-import com.texquest.repository.SubmissionRepository;
-import com.texquest.repository.ContestParticipationRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,35 +23,48 @@ public class SubmissionController {
     private QuestionRepository questionRepo;
 
     @Autowired
-    private ContestRepository contestRepo;
+    private ContestParticipationRepository participationRepo;
 
     @Autowired
-    private ContestParticipationRepository participationRepo;
+    private AiGraderService aiGraderService;
 
     @PostMapping
     public Submission submitAnswer(@RequestParam Long userId,
                                    @RequestParam Long questionId,
-                                   @RequestParam String latex) {
+                                   @RequestParam String submittedLatex,
+                                   @RequestParam String submittedImageUrl) {
         User user = userRepo.findById(userId).orElse(null);
         Question question = questionRepo.findById(questionId).orElse(null);
         if (user == null || question == null) return null;
 
-        boolean isCorrect = latex.trim().equals(question.getCorrectLatex().trim());
+        String correctLatex = question.getCorrectLatex();
+        String correctImageUrl = question.getImageUrl();
 
-        Submission submission = new Submission(user, question, latex, isCorrect, LocalDateTime.now());
+        // Grade the submission
+        AiGraderService.GradingResult result = aiGraderService.grade(submittedLatex, submittedImageUrl, correctLatex, correctImageUrl);
+        int score = result.score;
+        String feedback = result.feedback;
+
+        // Save submission
+        Submission submission = new Submission();
+        submission.setUser(user);
+        submission.setQuestion(question);
+        submission.setSubmittedLatex(submittedLatex);
+        submission.setSubmittedImageUrl(submittedImageUrl);
+        submission.setTimestamp(LocalDateTime.now());
+        submission.setScore(score);
+        submission.setFeedback(feedback);
         submissionRepo.save(submission);
 
-        if (isCorrect) {
-            Contest contest = contestRepo.findTopByOrderByStartTimeDesc();
-            ContestParticipation participation = participationRepo.findByUserAndContest(user, contest);
-
-            if (participation == null) {
-                participation = new ContestParticipation(user, contest);
-            }
-
-            participation.setScore(participation.getScore() + 1);
-            participationRepo.save(participation);
+        // Update contest score
+        Contest contest = question.getContest();
+        ContestParticipation cp = participationRepo.findByUserAndContest(user, contest);
+        if (cp == null) {
+            cp = new ContestParticipation(user, contest, score);
+        } else {
+            cp.setScore(cp.getScore() + score);
         }
+        participationRepo.save(cp);
 
         return submission;
     }
@@ -62,5 +73,17 @@ public class SubmissionController {
     public List<Submission> getUserSubmissions(@PathVariable Long userId) {
         User user = userRepo.findById(userId).orElse(null);
         return submissionRepo.findByUser(user);
+    }
+
+    @GetMapping("/history")
+    public List<Submission> getUserSubmissionsForQuestion(
+            @RequestParam Long userId,
+            @RequestParam Long questionId
+    ) {
+        User user = userRepo.findById(userId).orElse(null);
+        Question question = questionRepo.findById(questionId).orElse(null);
+
+        if (user == null || question == null) return List.of();
+        return submissionRepo.findByUserAndQuestionOrderByTimestampDesc(user, question);
     }
 }
