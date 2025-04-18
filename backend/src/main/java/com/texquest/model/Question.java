@@ -15,17 +15,20 @@ public class Question {
 
     private String correctLatex;
 
-    // Constructors
+    @ManyToOne
+    private Contest contest;
+
     public Question() {}
-    public Question(String description, String imageUrl, String correctLatex) {
+
+    public Question(String description, String imageUrl, String correctLatex, Contest contest) {
         this.description = description;
         this.imageUrl = imageUrl;
         this.correctLatex = correctLatex;
+        this.contest = contest;
     }
 
     // Getters and Setters
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -36,8 +39,6 @@ public class Question {
     public String getCorrectLatex() { return correctLatex; }
     public void setCorrectLatex(String correctLatex) { this.correctLatex = correctLatex; }
 
-    @Override
-    public String toString() {
-        return "Question{id=" + id + ", description='" + description + "', imageUrl='" + imageUrl + "', correctLatex='" + correctLatex + "'}";
-    }
+    public Contest getContest() { return contest; }
+    public void setContest(Contest contest) { this.contest = contest; }
 }

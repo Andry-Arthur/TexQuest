@@ -10,8 +10,19 @@ public class User {
     private Long id;
 
     private String name;
+
+    @Column(unique = true)
     private String email;
-    private int score;
+
+    private String password;
+
+    public User() {}
+
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 
     // Getters and setters
     public Long getId() {
@@ -38,11 +49,11 @@ public class User {
         this.email = email;
     }
 
-    public int getScore() {
-        return score;
+    public String getPassword() {
+        return password;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

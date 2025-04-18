@@ -10,15 +10,18 @@ public class Contest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;              // 👈 Add this
+    private String description;       // 👈 Add this
+
     private LocalDateTime startTime;
-
     private LocalDateTime endTime;
-
     private boolean isActive;
 
-    // Constructors
     public Contest() {}
-    public Contest(LocalDateTime startTime, LocalDateTime endTime, boolean isActive) {
+
+    public Contest(String name, String description, LocalDateTime startTime, LocalDateTime endTime, boolean isActive) {
+        this.name = name;
+        this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
         this.isActive = isActive;
@@ -36,6 +39,12 @@ public class Contest {
 
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
+
+    public String getName() { return name; } // 👈 Add this
+    public void setName(String name) { this.name = name; } // 👈 Add this
+
+    public String getDescription() { return description; } // 👈 Add this
+    public void setDescription(String description) { this.description = description; } // 👈 Add this
 
     @Override
     public String toString() {

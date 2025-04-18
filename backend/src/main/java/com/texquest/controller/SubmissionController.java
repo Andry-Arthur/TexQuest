@@ -5,6 +5,8 @@ import com.texquest.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.texquest.repository.QuestionRepository;
+import com.texquest.repository.SubmissionRepository;
+import com.texquest.repository.ContestParticipationRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,12 @@ public class SubmissionController {
     @Autowired
     private QuestionRepository questionRepo;
 
+    @Autowired
+    private ContestRepository contestRepo;
+
+    @Autowired
+    private ContestParticipationRepository participationRepo;
+
     @PostMapping
     public Submission submitAnswer(@RequestParam Long userId,
                                    @RequestParam Long questionId,
@@ -36,8 +44,15 @@ public class SubmissionController {
         submissionRepo.save(submission);
 
         if (isCorrect) {
-            user.setScore(user.getScore() + 1);
-            userRepo.save(user);
+            Contest contest = contestRepo.findTopByOrderByStartTimeDesc();
+            ContestParticipation participation = participationRepo.findByUserAndContest(user, contest);
+
+            if (participation == null) {
+                participation = new ContestParticipation(user, contest);
+            }
+
+            participation.setScore(participation.getScore() + 1);
+            participationRepo.save(participation);
         }
 
         return submission;
