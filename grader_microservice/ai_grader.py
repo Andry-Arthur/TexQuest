@@ -36,8 +36,11 @@ Use this grading policy:
 
 1. ✅ If the student's output is mathematically and visually identical to the correct one (even if the code is written differently), award full points.
 2. ⚠️ If there are minor differences in layout or symbols, deduct small amounts (e.g. misaligned subscripts, different but equivalent notation).
-3. ❌ If the submission is incomplete, semantically wrong, or visually misleading, assign a lower score accordingly.
-4. ✨ LaTeX code is helpful to justify the submission — but rendering quality and meaning take priority.
+3. ❌ If the submission is slightly incomplete or slightly incorrect (e.g., missing +C), deduct moderately, but not more than 30 points unless the mistake changes the meaning entirely. 
+4. ❌ If the submission is incomplete, semantically wrong, or visually misleading, assign a lower score accordingly.
+5. ✨ LaTeX code is helpful to justify the submission — but rendering quality and meaning take priority.
+
+For your feedback: Make sure it's constructive but don't give away the right latex code.
 
 Your response format MUST be:
 

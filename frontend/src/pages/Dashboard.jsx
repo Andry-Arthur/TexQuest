@@ -8,7 +8,7 @@ function Dashboard() {
   const fetchLeaderboard = async () => {
     if (!contestId) return;
     try {
-      const res = await axios.get("http://localhost:8080/api/contest/leaderboard", {
+      const res = await axios.get("/api/contest/leaderboard", {
         params: { contestId }
       });
       setLeaderboard(res.data);

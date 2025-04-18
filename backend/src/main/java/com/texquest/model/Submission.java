@@ -37,7 +37,7 @@ public class Submission {
         this.question = question;
         this.submittedLatex = submittedLatex;
         this.isCorrect = isCorrect;
-        this.submittedAt = submittedAt;
+        timestamp = submittedAt;
     }
 
     // Getters and Setters
@@ -72,8 +72,7 @@ public class Submission {
     public boolean isCorrect() { return isCorrect; }
     public void setCorrect(boolean correct) { isCorrect = correct; }
 
-    public LocalDateTime getSubmittedAt() { return submittedAt; }
-    public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
+
 
     public String getFeedback() {
         return feedback;
@@ -93,6 +92,6 @@ public class Submission {
 
     @Override
     public String toString() {
-        return "Submission{id=" + id + ", user=" + user + ", question=" + question + ", latex='" + submittedLatex + "', correct=" + isCorrect + ", submittedAt=" + submittedAt + "}";
+        return "Submission{id=" + id + ", user=" + user + ", question=" + question + ", latex='" + submittedLatex + "', correct=" + isCorrect + ", submittedAt=" + timestamp + "}";
     }
 }

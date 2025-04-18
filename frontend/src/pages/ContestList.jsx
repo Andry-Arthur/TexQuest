@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import "./ContestList.css";
 
 function ContestList() {
   const [groupedContests, setGroupedContests] = useState({
@@ -11,13 +12,33 @@ function ContestList() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/contest/all")
-      .then((res) => setGroupedContests(res.data))
+      .get("/api/contest/all-flat")
+      .then((res) => {
+        const now = new Date();
+        const upcoming = [];
+        const ongoing = [];
+        const past = [];
+
+        res.data.forEach((contest) => {
+          const start = new Date(contest.startTime);
+          const end = new Date(contest.endTime);
+
+          if (end < now) {
+            past.push(contest);
+          } else if (start > now) {
+            upcoming.push(contest);
+          } else {
+            ongoing.push(contest);
+          }
+        });
+
+        setGroupedContests({ upcoming, ongoing, past });
+      })
       .catch(console.error);
   }, []);
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className="container" style={{ padding: "2rem" }}>
       <h2>📅 Available Contests</h2>
 
       {["ongoing", "upcoming", "past"].map((group) => (
@@ -30,11 +51,8 @@ function ContestList() {
           {groupedContests[group]?.map((contest) => (
             <Link
               key={contest.id}
-              to={`/contest/${contest.id}`} // ✅ pass contestId in URL
-              style={{
-                textDecoration: "none",
-                color: "inherit"
-              }}
+              to={`/contest/${contest.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
             >
               <div
                 style={{
@@ -50,7 +68,8 @@ function ContestList() {
                 <h4>{contest.name}</h4>
                 <p>{contest.description}</p>
                 <p>
-                  <strong>🕒</strong> {new Date(contest.startTime).toLocaleString()} →{" "}
+                  <strong>🕒</strong>{" "}
+                  {new Date(contest.startTime).toLocaleString()} →{" "}
                   {new Date(contest.endTime).toLocaleString()}
                 </p>
               </div>

@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
+@CrossOrigin(origins = "http://157.245.244.233")  // Adjust port if needed
 public class QuestionController {
 
     @Autowired
@@ -22,14 +23,16 @@ public class QuestionController {
     // ✅ Get all questions for a specific contest
     @GetMapping
     public List<Question> getQuestions(@RequestParam Long contestId) {
-        Contest contest = contestRepo.findById(contestId).orElse(null);
+        Contest contest = contestRepo.findById(contestId)
+                .orElseThrow(() -> new RuntimeException("Contest not found"));
         return questionRepo.findByContest(contest);
     }
 
     // ✅ Add a question to a contest
     @PostMapping
     public Question createQuestion(@RequestParam Long contestId, @RequestBody Question question) {
-        Contest contest = contestRepo.findById(contestId).orElse(null);
+        Contest contest = contestRepo.findById(contestId)
+                .orElseThrow(() -> new RuntimeException("Contest not found"));
         question.setContest(contest);
         return questionRepo.save(question);
     }

@@ -12,7 +12,7 @@ public class AiGraderService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public GradingResult grade(String submittedLatex, String submittedImageUrl, String correctLatex, String correctImageUrl) {
-        String endpoint = "http://localhost:5000/grade";
+        String endpoint = "http://127.0.0.1:5000/grade";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

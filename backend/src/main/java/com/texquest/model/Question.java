@@ -15,6 +15,9 @@ public class Question {
 
     private String imageUrl;
 
+    @Column(nullable = false)
+    private int points = 1;
+
     @Column(length = 5000)
     private String correctLatex;
 
@@ -47,4 +50,7 @@ public class Question {
 
     public Contest getContest() { return contest; }
     public void setContest(Contest contest) { this.contest = contest; }
+
+    public int getPoints() { return points; }
+    public void setPoints(int points) { this.points = points; }
 }

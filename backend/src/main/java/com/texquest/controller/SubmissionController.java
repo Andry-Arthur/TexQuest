@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/submit")
+@CrossOrigin(origins = "http://157.245.244.233")
 public class SubmissionController {
 
     @Autowired
@@ -41,8 +42,16 @@ public class SubmissionController {
         String correctImageUrl = question.getImageUrl();
 
         // Grade the submission
-        AiGraderService.GradingResult result = aiGraderService.grade(submittedLatex, submittedImageUrl, correctLatex, correctImageUrl);
-        int score = result.score;
+        AiGraderService.GradingResult result = aiGraderService.grade(
+                submittedLatex, submittedImageUrl, correctLatex, correctImageUrl);
+
+        int baseScore = result.score; // from 0 to 100
+        int questionPoints = question.getPoints(); // e.g., 20 points max
+        System.out.println("Base Score: " + baseScore);
+        // Calculate weighted score based on question points
+        double finalScore = (baseScore / 100.0) * questionPoints;
+        System.out.println("Question Points: " + questionPoints);
+        System.out.println("Final Score: " + finalScore);
         String feedback = result.feedback;
 
         // Save submission
@@ -52,17 +61,17 @@ public class SubmissionController {
         submission.setSubmittedLatex(submittedLatex);
         submission.setSubmittedImageUrl(submittedImageUrl);
         submission.setTimestamp(LocalDateTime.now());
-        submission.setScore(score);
+        submission.setScore(finalScore);
         submission.setFeedback(feedback);
         submissionRepo.save(submission);
 
-        // Update contest score
+        // Update contest total score
         Contest contest = question.getContest();
         ContestParticipation cp = participationRepo.findByUserAndContest(user, contest);
         if (cp == null) {
-            cp = new ContestParticipation(user, contest, score);
+            cp = new ContestParticipation(user, contest, finalScore);
         } else {
-            cp.setScore(cp.getScore() + score);
+            cp.setScore(cp.getScore() + finalScore);
         }
         participationRepo.save(cp);
 

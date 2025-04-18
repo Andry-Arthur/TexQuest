@@ -1,28 +1,54 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "./Admin.css";
 
-function Contest({ userId }) {
-  const { contestId } = useParams(); // ✅ contest ID from route
-  const [questions, setQuestions] = useState([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [submittedLatex, setSubmittedLatex] = useState("");
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [submissionResult, setSubmissionResult] = useState(null);
-  const [answered, setAnswered] = useState({});
+function Admin() {
+  const [contest, setContest] = useState({
+    name: "",
+    description: "",
+    startTime: "",
+    endTime: "",
+  });
+  const [contestId, setContestId] = useState(null);
+  const [question, setQuestion] = useState({
+    title: "",
+    description: "",
+    imageUrl: "",
+    correctLatex: "",
+    points: 1, // ✅ default to 1
+  });
+  const [addedQuestions, setAddedQuestions] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const res = await axios.get(`http://localhost:8080/api/questions?contestId=${contestId}`);
-        setQuestions(res.data);
-      } catch (err) {
-        console.error("Failed to fetch questions", err);
-      }
-    };
+  const handleCreateContest = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("/api/contest", contest);
+      setContestId(res.data.id);
+      alert(`✅ Contest created! ID: ${res.data.id}`);
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to create contest.");
+    }
+  };
 
-    if (contestId) fetchQuestions();
-  }, [contestId]);
+  const handleAddQuestion = async (e) => {
+    e.preventDefault();
+    if (!contestId) return alert("⚠️ Create a contest first!");
+
+    try {
+      const res = await axios.post(
+        `/api/questions?contestId=${contestId}`,
+        question
+      );
+      setAddedQuestions([...addedQuestions, res.data]);
+      setQuestion({ title: "", description: "", imageUrl: "", correctLatex: "", points: 1 });
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to add question.");
+    }
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -30,149 +56,133 @@ function Contest({ userId }) {
     formData.append("file", file);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/upload", formData);
+      const res = await axios.post("/api/upload", formData);
       const imageUrl = res.data;
-      setUploadedImageUrl(imageUrl);
+      setQuestion({ ...question, imageUrl });
     } catch (err) {
-      console.error("Image upload failed", err);
+      console.error("Upload failed", err);
       alert("❌ Image upload failed.");
     }
   };
 
-  const handleSubmit = async () => {
-    const question = questions[currentQuestionIndex];
-    if (!submittedLatex || !uploadedImageUrl) {
-      alert("Please enter LaTeX and upload an image.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("userId", userId);
-    formData.append("questionId", question.id);
-    formData.append("submittedLatex", submittedLatex);
-    formData.append("submittedImageUrl", uploadedImageUrl);
-
-    try {
-      const res = await axios.post("http://localhost:8080/api/submit", formData);
-      setSubmissionResult(res.data);
-      setAnswered({ ...answered, [question.id]: true });
-    } catch (err) {
-      console.error("Submission failed", err);
-      alert("❌ Submission failed.");
-    }
+  const handleFinish = () => {
+    alert(`✅ Contest #${contestId} finalized!`);
+    navigate("/contests");
   };
-
-  const goToNext = () => {
-    setCurrentQuestionIndex((i) => i + 1);
-    setSubmittedLatex("");
-    setUploadedImageUrl("");
-    setSubmissionResult(null);
-  };
-
-  const goToPrevious = () => {
-    setCurrentQuestionIndex((i) => i - 1);
-    setSubmittedLatex("");
-    setUploadedImageUrl("");
-    setSubmissionResult(null);
-  };
-
-  const jumpToQuestion = (idx) => {
-    setCurrentQuestionIndex(idx);
-    setSubmittedLatex("");
-    setUploadedImageUrl("");
-    setSubmissionResult(null);
-  };
-
-  if (!questions.length) return <div>Loading contest questions...</div>;
-
-  const question = questions[currentQuestionIndex];
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>TexQuest Contest #{contestId}</h2>
-
-      {/* Navigation */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-        {questions.map((q, idx) => (
-          <button
-            key={q.id}
-            onClick={() => jumpToQuestion(idx)}
-            style={{
-              padding: "0.5rem",
-              borderRadius: "6px",
-              backgroundColor:
-                idx === currentQuestionIndex
-                  ? "#007bff"
-                  : answered[q.id]
-                  ? "#28a745"
-                  : "#6c757d",
-              color: "white",
-              border: "none",
-              cursor: "pointer"
-            }}
-          >
-            Q{idx + 1}
-          </button>
-        ))}
-      </div>
-
-      {/* Question */}
-      <h3>{question.title}</h3>
-      <p>{question.description}</p>
-      <img
-        src={question.imageUrl}
-        alt="Question"
-        style={{ maxWidth: "300px", border: "1px solid #ccc", marginBottom: "1rem" }}
-      />
-
-      {/* Answer */}
-      <div>
-        <label>Enter your LaTeX code:</label><br />
-        <textarea
-          value={submittedLatex}
-          onChange={(e) => setSubmittedLatex(e.target.value)}
-          rows={4}
-          cols={50}
-          placeholder="e.g. \int_0^1 x dx"
-        />
-        <br />
-        <label>Upload your rendered LaTeX image:</label><br />
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-        {uploadedImageUrl && (
-          <div style={{ marginTop: "0.5rem" }}>
-            <img
-              src={uploadedImageUrl}
-              alt="Uploaded"
-              style={{ maxWidth: "200px", border: "1px solid #ccc" }}
-            />
-          </div>
-        )}
-        <br />
-        <button style={{ marginTop: "1rem" }} onClick={handleSubmit}>
-          Submit Answer
-        </button>
-      </div>
-
-      {/* Result */}
-      {submissionResult && (
-        <div style={{ marginTop: "2rem", padding: "1rem", border: "1px solid #ccc" }}>
-          <h4>✅ Grading Result</h4>
-          <p><strong>Score:</strong> {submissionResult.score}/100</p>
-          <p><strong>Feedback:</strong> {submissionResult.feedback}</p>
+    <div className="admin-container">
+      <h2>Create a New Contest</h2>
+      <form onSubmit={handleCreateContest}>
+        <div>
+          <label>Contest Name:</label>
+          <input
+            value={contest.name}
+            onChange={(e) => setContest({ ...contest, name: e.target.value })}
+            required
+          />
         </div>
-      )}
+        <div>
+          <label>Description:</label>
+          <textarea
+            value={contest.description}
+            onChange={(e) => setContest({ ...contest, description: e.target.value })}
+          />
+        </div>
+        <div>
+          <label>Start Time:</label>
+          <input
+            type="datetime-local"
+            value={contest.startTime}
+            onChange={(e) => setContest({ ...contest, startTime: e.target.value })}
+            required
+          />
+        </div>
+        <div>
+          <label>End Time:</label>
+          <input
+            type="datetime-local"
+            value={contest.endTime}
+            onChange={(e) => setContest({ ...contest, endTime: e.target.value })}
+            required
+          />
+        </div>
+        <button type="submit">Create Contest</button>
+      </form>
 
-      {/* Navigation */}
-      <div style={{ marginTop: "2rem" }}>
-        {currentQuestionIndex > 0 && (
-          <button onClick={goToPrevious}>← Previous</button>
-        )}
-        {currentQuestionIndex < questions.length - 1 && (
-          <button style={{ marginLeft: "1rem" }} onClick={goToNext}>Next →</button>
-        )}
-      </div>
+      {contestId && (
+        <>
+          <h3>Add Questions to Contest #{contestId}</h3>
+          <form onSubmit={handleAddQuestion}>
+            <div>
+              <label>Title:</label>
+              <input
+                value={question.title}
+                onChange={(e) => setQuestion({ ...question, title: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>Description:</label>
+              <textarea
+                value={question.description}
+                onChange={(e) => setQuestion({ ...question, description: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>Upload LaTeX Image:</label>
+              <input type="file" accept="image/*" onChange={handleImageUpload} />
+              {question.imageUrl && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <img
+                    src={question.imageUrl}
+                    alt="preview"
+                    style={{ maxWidth: "150px", border: "1px solid #aaa" }}
+                  />
+                </div>
+              )}
+            </div>
+            <div>
+              <label>Correct LaTeX Code:</label>
+              <input
+                value={question.correctLatex}
+                onChange={(e) =>
+                  setQuestion({ ...question, correctLatex: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <label>Points (minimum 1):</label>
+              <input
+                type="number"
+                min="1"
+                value={question.points}
+                onChange={(e) =>
+                  setQuestion({ ...question, points: parseInt(e.target.value || "1") })
+                }
+                required
+              />
+            </div>
+            <button type="submit">Add Question</button>
+          </form>
+
+          {addedQuestions.length > 0 && (
+            <div style={{ marginTop: "1rem" }}>
+              <h4>Added Questions:</h4>
+              <ul>
+                {addedQuestions.map((q, idx) => (
+                  <li key={idx}>{q.title} – {q.points} pts</li>
+                ))}
+              </ul>
+              <button style={{ marginTop: "1rem" }} onClick={handleFinish}>
+                Finish & Exit
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
 
-export default Contest;
+export default Admin;

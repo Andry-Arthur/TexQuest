@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useParams, Link } from "react-router-dom";
+import "./Contest.css";
 
-function Contest({ userId }) {
+function Contest() {
   const { contestId } = useParams();
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -10,11 +11,13 @@ function Contest({ userId }) {
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [submissionResult, setSubmissionResult] = useState(null);
   const [answered, setAnswered] = useState({});
+  const [submissionHistory, setSubmissionHistory] = useState([]);
+  const userId = JSON.parse(localStorage.getItem("user"))?.id;
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/questions?contestId=${contestId}`);
+        const res = await axios.get(`/api/questions?contestId=${contestId}`);
         setQuestions(res.data);
       } catch (err) {
         console.error("Failed to fetch questions", err);
@@ -23,13 +26,28 @@ function Contest({ userId }) {
     fetchQuestions();
   }, [contestId]);
 
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const question = questions[currentQuestionIndex];
+      if (!question || !userId) return;
+      try {
+        const res = await axios.get(`/api/submit/user/${userId}`);
+        const filtered = res.data.filter(sub => sub.question.id === question.id);
+        setSubmissionHistory(filtered);
+      } catch (err) {
+        console.error("Error loading submission history", err);
+      }
+    };
+    fetchHistory();
+  }, [currentQuestionIndex, questions, userId]);
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/upload", formData);
+      const res = await axios.post("/api/upload", formData);
       setUploadedImageUrl(res.data);
     } catch (err) {
       console.error("Image upload failed", err);
@@ -52,7 +70,7 @@ function Contest({ userId }) {
     formData.append("submittedImageUrl", uploadedImageUrl);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/submit", formData);
+      const res = await axios.post("/api/submit", formData);
       setSubmissionResult(res.data);
       setAnswered({ ...answered, [question.id]: true });
     } catch (err) {
@@ -90,7 +108,15 @@ function Contest({ userId }) {
     <div style={{ padding: "2rem" }}>
       <h2>TexQuest Contest</h2>
 
-      {/* Question List Navigation */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <Link to={`/contest/${contestId}/leaderboard`}>
+          <button style={{ backgroundColor: "#ffc107", color: "black", fontWeight: "bold" }}>
+            🏆 View Leaderboard
+          </button>
+        </Link>
+      </div>
+
+      {/* Question Navigation */}
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
         {questions.map((q, idx) => (
           <button
@@ -119,6 +145,7 @@ function Contest({ userId }) {
       {/* Question Display */}
       <h4>{question.title}</h4>
       <p>{question.description}</p>
+      <p><strong>Points:</strong> {question.points}</p>
       <img
         src={question.imageUrl}
         alt="Question"
@@ -159,20 +186,30 @@ function Contest({ userId }) {
       {submissionResult && (
         <div style={{ marginTop: "2rem", border: "1px solid #ccc", padding: "1rem" }}>
           <h4>✅ Submission Graded</h4>
-          <p><strong>Score:</strong> {submissionResult.score}/100</p>
+          <p><strong>Score:</strong> {submissionResult.score}/{question.points}</p>
           <p><strong>Feedback:</strong> {submissionResult.feedback}</p>
         </div>
       )}
 
-      {/* Next/Previous Navigation */}
+      {/* Submission History */}
+      {submissionHistory.length > 0 && (
+        <div style={{ marginTop: "2rem" }}>
+          <h4>📜 Submission History for this Question</h4>
+          <ul>
+            {submissionHistory.map((s, i) => (
+              <li key={i}>
+                <strong>Score:</strong> {s.score}/{question.points}, <strong>Feedback:</strong> {s.feedback}, <strong>Submitted:</strong> {new Date(s.timestamp).toLocaleString()}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Navigation */}
       <div style={{ marginTop: "2rem" }}>
-        {currentQuestionIndex > 0 && (
-          <button onClick={goToPrevious}>← Previous</button>
-        )}
+        {currentQuestionIndex > 0 && <button onClick={goToPrevious}>← Previous</button>}
         {currentQuestionIndex < questions.length - 1 && (
-          <button onClick={goToNext} style={{ marginLeft: "1rem" }}>
-            Next →
-          </button>
+          <button onClick={goToNext} style={{ marginLeft: "1rem" }}>Next →</button>
         )}
       </div>
     </div>
