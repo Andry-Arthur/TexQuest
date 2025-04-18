@@ -14,7 +14,9 @@ function Contest({ userId }) {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/questions?contestId=${contestId}`);
+        const res = await axios.get(
+          `http://localhost:8080/api/questions?contestId=${contestId}`
+        );
         setQuestions(res.data);
       } catch (err) {
         console.error("Failed to fetch questions", err);
@@ -30,7 +32,10 @@ function Contest({ userId }) {
     formData.append("file", file);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/upload", formData);
+      const res = await axios.post(
+        "http://localhost:8080/api/upload",
+        formData
+      );
       const imageUrl = res.data;
       setUploadedImageUrl(imageUrl);
     } catch (err) {
@@ -53,7 +58,10 @@ function Contest({ userId }) {
     formData.append("submittedImageUrl", uploadedImageUrl);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/submit", formData);
+      const res = await axios.post(
+        "http://localhost:8080/api/submit",
+        formData
+      );
       setSubmissionResult(res.data);
       setAnswered({ ...answered, [question.id]: true });
     } catch (err) {
@@ -92,7 +100,14 @@ function Contest({ userId }) {
       <h2>TexQuest Contest #{contestId}</h2>
 
       {/* Navigation */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "0.5rem",
+          marginBottom: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
         {questions.map((q, idx) => (
           <button
             key={q.id}
@@ -108,7 +123,7 @@ function Contest({ userId }) {
                   : "#6c757d",
               color: "white",
               border: "none",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             Q{idx + 1}
@@ -122,12 +137,17 @@ function Contest({ userId }) {
       <img
         src={question.imageUrl}
         alt="Question"
-        style={{ maxWidth: "300px", border: "1px solid #ccc", marginBottom: "1rem" }}
+        style={{
+          maxWidth: "300px",
+          border: "1px solid #ccc",
+          marginBottom: "1rem",
+        }}
       />
 
       {/* Answer */}
       <div>
-        <label>Enter your LaTeX code:</label><br />
+        <label>Enter your LaTeX code:</label>
+        <br />
         <textarea
           value={submittedLatex}
           onChange={(e) => setSubmittedLatex(e.target.value)}
@@ -136,7 +156,8 @@ function Contest({ userId }) {
           placeholder="e.g. \int_0^1 x dx"
         />
         <br />
-        <label>Upload your rendered LaTeX image:</label><br />
+        <label>Upload your rendered LaTeX image:</label>
+        <br />
         <input type="file" accept="image/*" onChange={handleImageUpload} />
         {uploadedImageUrl && (
           <div style={{ marginTop: "0.5rem" }}>
@@ -155,10 +176,21 @@ function Contest({ userId }) {
 
       {/* Result */}
       {submissionResult && (
-        <div style={{ marginTop: "2rem", padding: "1rem", border: "1px solid #ccc" }}>
+        <div
+          style={{
+            marginTop: "2rem",
+            padding: "1rem",
+            border: "1px solid #ccc",
+          }}
+        >
           <h4>✅ Grading Result</h4>
-          <p><strong>Score:</strong> {submissionResult.score}/100</p>
-          <p><strong>Feedback:</strong> {submissionResult.feedback}</p>
+          <p>
+            <strong>Score:</strong> {submissionResult.score}/100
+          </p>
+          Loading contest questions...
+          <p>
+            <strong>Feedback:</strong> {submissionResult.feedback}
+          </p>
         </div>
       )}
 
@@ -168,7 +200,9 @@ function Contest({ userId }) {
           <button onClick={goToPrevious}>← Previous</button>
         )}
         {currentQuestionIndex < questions.length - 1 && (
-          <button style={{ marginLeft: "1rem" }} onClick={goToNext}>Next →</button>
+          <button style={{ marginLeft: "1rem" }} onClick={goToNext}>
+            Next →
+          </button>
         )}
       </div>
     </div>
