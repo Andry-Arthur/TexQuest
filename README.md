@@ -142,8 +142,35 @@ GEMINI_API_KEY=your_gemini_api_key
 
 ## License
 
-[Add your license information here]
+Copyright (c) 2024 Andry Rakotonjanabelo. All rights reserved.
+
+This software and associated documentation files (the "Software") are proprietary and confidential. 
+The Software is protected by copyright laws and international copyright treaties, as well as other 
+intellectual property laws and treaties.
+
+No part of this Software may be reproduced, distributed, or transmitted in any form or by any means, 
+including photocopying, recording, or other electronic or mechanical methods, without the prior 
+written permission of the copyright holder.
+
+Unauthorized copying, modification, distribution, or use of this Software, via any medium, is 
+strictly prohibited and will be prosecuted to the maximum extent possible under the law.
 
 ## Support
 
-[Add support/contact information here] 
+### Contact Information
+- **Author:** Andry Rakotonjanabelo
+- **Email:** andry1arthur@gmail.com
+
+### Getting Help
+- For bug reports, please include:
+  - A clear description of the issue
+  - Steps to reproduce the problem
+  - Expected vs actual behavior
+  - Screenshots if applicable
+
+### Response Time
+- Business hours: 9 AM - 5 PM (GMT+3)
+- Typical response time: 24-48 hours
+
+### Security Issues
+For security-related concerns, please email directly with "SECURITY" in the subject line.
