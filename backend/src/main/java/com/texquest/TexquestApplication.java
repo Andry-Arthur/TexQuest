@@ -18,7 +18,7 @@ public class TexquestApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("http://157.245.244.233") // React dev server
+						.allowedOrigins("*") // React dev server
 						.allowedMethods("*")
 						.allowedHeaders("*");
 			}
