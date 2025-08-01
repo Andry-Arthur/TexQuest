@@ -6,6 +6,7 @@ import ContestList from "./pages/ContestList";
 import Contest from "./pages/Contest";
 import Admin from "./pages/Admin";
 import Leaderboard from "./pages/Leaderboard";
+import About from "./pages/About";
 import Navbar from "./components/Navbar";
 import AuthRoute from "./components/AuthRoute";
 import GuestOnlyRoute from "./components/GuestOnlyRoute";
@@ -71,6 +72,12 @@ function App() {
             <AuthRoute>
               <Admin />
             </AuthRoute>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+              <About />
           }
         />
       </Routes>
