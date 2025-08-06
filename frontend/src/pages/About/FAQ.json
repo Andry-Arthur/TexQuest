@@ -1,0 +1,24 @@
+{
+    "faqData": [
+        {
+            "question": "What is TexQuest?",
+            "answer": "TexQuest is a competitive platform designed to challenge participants on their LaTeX and problem-posing skills. It's built for math and programming enthusiasts who want to test their abilities in creating and formatting mathematical content using LaTeX."
+        },
+        {
+            "question": "How does the competition work?",
+            "answer": "Participants submit custom questions using LaTeX formatting. These submissions are then evaluated using AI-powered grading systems that assess both the technical accuracy of the LaTeX code and the quality of the mathematical content."
+        },
+        {
+            "question": "What skills do I need to participate?",
+            "answer": "You should have basic knowledge of LaTeX syntax, mathematical notation, and problem-solving skills. While advanced LaTeX knowledge is helpful, we welcome participants of all skill levels who are eager to learn and improve."
+        },
+        {
+            "question": "How is the grading done?",
+            "answer": "Our AI-powered grading system evaluates submissions based on LaTeX syntax accuracy, mathematical correctness, problem clarity, and overall presentation. The system provides instant feedback to help participants learn and improve."
+        },
+        {
+            "question": "How can I participate in TexQuest?",
+            "answer": "Keep an eye on our announcements through our social media channels and email updates. Registration details and competition dates will be posted well in advance of each event."
+        }
+    ]
+}

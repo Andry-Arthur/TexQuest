@@ -25,7 +25,10 @@ function Navbar({ user, setUser }) {
         TexQuest
       </Link>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem"}}>
+        <Link to="/about" style={{ color: "white", textDecoration: "none" }}>
+          About
+        </Link>
         {user ? (
           <>
             <span>👤 {user.name}</span>

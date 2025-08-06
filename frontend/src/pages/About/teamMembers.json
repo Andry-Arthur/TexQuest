@@ -1,0 +1,16 @@
+{
+    "teamMembers": [
+        {
+            "name": "Andry Rakotonjanabelo",
+            "bio": "",
+            "image": "/images/Andry.jpeg",
+            "alt": "Andry Rakotonjanabelo - TexQuest Team Member"
+        },
+        {
+            "name": "Abiral Shrestha",
+            "bio": "",
+            "image": "/images/Abiral.jpeg",
+            "alt": "Abiral Shrestha - TexQuest Team Member"
+        }
+    ]
+}
